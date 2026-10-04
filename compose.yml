@@ -2,22 +2,41 @@ services:
   windows:
     image: dockurr/windows:latest
     container_name: windows11
-    network_mode: bridge
+    privileged: true
 
     environment:
-      VERSION: "win11"
+      VERSION: "11"
+
       LANGUAGE: "Portuguese"
       REGION: "pt-BR"
       KEYBOARD: "pt-BR"
-      NETWORK_MODE: "nat"
 
-      RAM_SIZE: "8G"
+      # NAT para internet dentro do Windows
+      NETWORK: "nat"
+
+      # Recursos do GitHub Codespace
       CPU_CORES: "4"
+      RAM_SIZE: "4G"
+
+      # Disco virtual do Windows
       DISK_SIZE: "64G"
 
       USERNAME: "Docker"
       PASSWORD: "admin"
       AUTOLOGIN: "Y"
+
+      # KVM
+      KVM: "Y"
+      RAM_CHECK: "Y"
+
+    # DNS do container
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+
+    dns_opt:
+      - "timeout:2"
+      - "attempts:3"
 
     devices:
       - /dev/kvm
@@ -35,6 +54,7 @@ services:
       - windows_data:/storage
 
     restart: unless-stopped
+    stop_grace_period: 2m
 
 volumes:
   windows_data:
